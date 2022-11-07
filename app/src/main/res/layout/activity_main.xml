@@ -86,7 +86,7 @@
         app:layout_constraintTop_toTopOf="@id/barrierBottom" />
 
     <TextView
-        android:id="@+id/like_amount"
+        android:id="@+id/likeCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -104,11 +104,11 @@
         android:contentDescription="@string/description_post_reply"
         android:src="@drawable/reply"
         app:layout_constraintBottom_toBottomOf="@id/like"
-        app:layout_constraintStart_toEndOf="@id/like_amount"
+        app:layout_constraintStart_toEndOf="@id/likeCount"
         app:layout_constraintTop_toTopOf="@id/like" />
 
     <TextView
-        android:id="@+id/reply_amount"
+        android:id="@+id/replyCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
