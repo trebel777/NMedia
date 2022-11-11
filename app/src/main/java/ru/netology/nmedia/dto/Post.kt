@@ -1,6 +1,6 @@
-package ru.netology.nmedia
+package ru.netology.nmedia.dto
 
-data class Post (
+data class Post(
     val id: Long,
     val author: String,
     val content: String,
@@ -9,4 +9,4 @@ data class Post (
     var replys: Int = 999_000,
     var replyByMe: Boolean = false,
     var likedByMe: Boolean = false
-        )
+)
