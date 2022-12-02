@@ -45,11 +45,11 @@ class PostViewHolder(
             author.text = post.author
             published.text = post.published
             content.text = post.content
-            likeCount.text = ps.getFormatedNumber(post.likes)
-            replyCount.text = ps.getFormatedNumber(post.replys)
-            like.setImageResource(
-                if (post.likedByMe) R.drawable.liked_24 else R.drawable.like
-            )
+            like.isChecked = post.likedByMe
+            reply.isChecked = post.replyByMe
+            like.text = ps.getFormatedNumber(post.likes)
+            reply.text = ps.getFormatedNumber(post.replys)
+
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.options_post)
@@ -68,9 +68,7 @@ class PostViewHolder(
                     }
                 }.show()
             }
-            if (post.likedByMe) {
-                like.setImageResource(R.drawable.liked_24)
-            }
+
             like.setOnClickListener{
                 onInteractionListener.onLike(post)
             }

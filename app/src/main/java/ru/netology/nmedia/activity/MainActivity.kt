@@ -16,11 +16,10 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         val binding = ActivityMainBinding.inflate(layoutInflater)
-
         setContentView(binding.root)
+
         val viewModel: PostViewModel by viewModels()
         val adapter = PostsAdapter(object : OnInteractionListener {
             override fun onEdit(post: Post) {
@@ -71,6 +70,7 @@ class MainActivity : AppCompatActivity() {
         }
         binding.cancelEdit.setOnClickListener {
             with(binding.content) {
+                viewModel.cancelEdit()
                 setText("")
                 clearFocus()
                 AndroidUtils.hideKeyboard(this)

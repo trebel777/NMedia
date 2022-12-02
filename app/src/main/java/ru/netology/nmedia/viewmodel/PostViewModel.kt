@@ -11,6 +11,7 @@ private val empty = Post(
     content = "",
     author = "",
     likedByMe = false,
+    replyByMe = false,
     published = ""
 )
 
@@ -33,6 +34,9 @@ class PostViewModel : ViewModel() {
             return
         }
         edited.value = edited.value?.copy(content = text)
+    }
+    fun cancelEdit(){
+        edited.value = empty
     }
     fun likeById(id: Long) = repository.likeById(id)
     fun replyById(id: Long) = repository.replyById(id)
