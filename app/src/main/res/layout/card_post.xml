@@ -43,15 +43,17 @@
         app:layout_constraintTop_toBottomOf="@id/author"
         tools:text="@sample/posts.json/data/published" />
 
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         android:contentDescription="@string/description_post_author_menu"
-        android:src="@drawable/ic_baseline_more_vert_24"
+        app:icon="@drawable/ic_baseline_more_vert_24"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/Widget.AppTheme.IconButton"
+        />
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrierTop"
@@ -76,47 +78,36 @@
         app:barrierDirection="bottom"
         app:constraint_referenced_ids="content" />
 
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/like"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:checkable="true"
         android:layout_marginTop="@dimen/indent"
         android:background="@android:color/transparent"
         android:contentDescription="@string/description_post_like"
-        android:src="@drawable/like"
+        app:icon="@drawable/ic_like_selector"
+        tools:checked="@sample/posts.json/data/likedByMe"
+        tools:text="@sample/posts.json/data/likes"
+        style="@style/Widget.AppTheme.LikeButton"
         app:layout_constraintTop_toTopOf="@id/barrierBottom" />
 
-    <TextView
-        android:id="@+id/likeCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="@id/like"
-        app:layout_constraintStart_toEndOf="@id/like"
-        app:layout_constraintTop_toTopOf="@id/like"
-        tools:text="@sample/posts.json/data/like_amount" />
 
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/reply"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
+        android:checkable="true"
         android:background="@android:color/transparent"
         android:contentDescription="@string/description_post_reply"
-        android:src="@drawable/reply"
+        app:icon="@drawable/reply"
+        tools:checked="@sample/posts.json/data/replyByMe"
+        tools:text="@sample/posts.json/data/reply_amount"
+        style="@style/Widget.AppTheme.IconButton"
         app:layout_constraintBottom_toBottomOf="@id/like"
-        app:layout_constraintStart_toEndOf="@id/likeCount"
+        app:layout_constraintStart_toEndOf="@id/like"
         app:layout_constraintTop_toTopOf="@id/like" />
-
-    <TextView
-        android:id="@+id/replyCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="@id/reply"
-        app:layout_constraintStart_toEndOf="@id/reply"
-        app:layout_constraintTop_toTopOf="@id/reply"
-        tools:text="@sample/posts.json/data/reply_amount" />
 
     <ImageButton
         android:id="@+id/views"
