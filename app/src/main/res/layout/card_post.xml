@@ -71,6 +71,33 @@
         app:layout_constraintTop_toBottomOf="@id/barrierTop"
         tools:text="@sample/posts.json/data/content" />
 
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/playGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="prewievImage, playImage"/>
+
+    <ImageView
+        android:id="@+id/prewievImage"
+        android:layout_width="match_parent"
+        android:layout_height="240dp"
+        android:layout_marginTop="@dimen/indent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/video_prewiev"
+        app:layout_constraintTop_toBottomOf="@+id/content"
+        app:layout_constraintBottom_toTopOf="@id/barrierBottom"
+         />
+
+    <ImageView
+        android:id="@+id/playImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/prewievImage"
+        app:layout_constraintEnd_toEndOf="@+id/prewievImage"
+        app:layout_constraintStart_toStartOf="@+id/prewievImage"
+        app:layout_constraintTop_toTopOf="@+id/prewievImage"
+        app:srcCompat="@drawable/ic_play_button_48" />
+
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrierBottom"
         android:layout_width="wrap_content"

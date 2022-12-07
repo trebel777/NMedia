@@ -1,6 +1,7 @@
 package ru.netology.nmedia.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
@@ -11,12 +12,14 @@ import ru.netology.nmedia.activity.PostService
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
 
-interface OnInteractionListener{
+interface OnInteractionListener {
     fun onLike(post: Post) {}
     fun onEdit(post: Post) {}
     fun onReply(post: Post) {}
     fun onRemove(post: Post) {}
+    fun onVideoClick(post: Post){}
 }
+
 var ps = PostService()
 
 class PostsAdapter(
@@ -45,17 +48,18 @@ class PostViewHolder(
             author.text = post.author
             published.text = post.published
             content.text = post.content
-            like.isChecked = post.likedByMe
-            reply.isChecked = post.replyByMe
+            like.isChecked = post.likedByMe!!
+            reply.isChecked = post.replyByMe!!
             like.text = ps.getFormatedNumber(post.likes)
             reply.text = ps.getFormatedNumber(post.replys)
+            playGroup.visibility = if (post.video.isNullOrBlank()) View.GONE else View.VISIBLE
 
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.options_post)
                     setOnMenuItemClickListener { item ->
                         when (item.itemId) {
-                            R.id.remove ->{
+                            R.id.remove -> {
                                 onInteractionListener.onRemove(post)
                                 true
                             }
@@ -69,16 +73,23 @@ class PostViewHolder(
                 }.show()
             }
 
-            like.setOnClickListener{
+            like.setOnClickListener {
                 onInteractionListener.onLike(post)
             }
             reply.setOnClickListener {
                 onInteractionListener.onReply(post)
             }
+            playImage.setOnClickListener{
+                onInteractionListener.onVideoClick(post)
+            }
+            prewievImage.setOnClickListener {
+                onInteractionListener.onVideoClick(post)
+            }
         }
     }
 }
-class PostDiffCallback: DiffUtil.ItemCallback<Post>(){
+
+class PostDiffCallback : DiffUtil.ItemCallback<Post>() {
     override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
         return oldItem == newItem
     }

@@ -14,6 +14,7 @@ class PostRepositoryInMemoryImpl : PostRepository {
             author = "Нетология. Университет интернет-профессий будущего",
             content = "Привет, это новая Нетология! Когда-то Нетология начиналась с интенсивов по онлайн-маркетингу. Затем появились курсы по дизайну, разработке, аналитике и управлению. Мы растём сами и помогаем расти студентам: от новичков до уверенных профессионалов. Но самое важное остаётся с нами: мы верим, что в каждом уже есть сила, которая заставляет хотеть больше, целиться выше, бежать быстрее. Наша миссия — помочь встать на путь роста и начать цепочку перемен → http://netolo.gy/fyb",
             published = "21 мая в 18:36",
+            video = "https://www.youtube.com/watch?v=WhWc3b3KhnY",
             likedByMe = false,
             replyByMe = false
         ),
@@ -79,7 +80,8 @@ class PostRepositoryInMemoryImpl : PostRepository {
             content = "Освоение новой профессии — это не только открывающиеся возможности и перспективы, но и настоящий вызов самому себе. Приходится выходить из зоны комфорта и перестраивать привычный образ жизни: менять распорядок дня, искать время для занятий, быть готовым к возможным неудачам в начале пути. В блоге рассказали, как избежать стресса на курсах профпереподготовки → http://netolo.gy/fPD",
             published = "23 сентября в 10:12",
             likedByMe = false,
-            replyByMe = false
+            replyByMe = false,
+            video = "https://vk.com/al_feed.php?t2fs=5a056309ef0d5615c8_2&z=video-71474813_456298517%2F3a8e5dc7fb529d065d%2Fpl_feed_recommends"
         ),
     ).reversed()
 
@@ -106,33 +108,33 @@ class PostRepositoryInMemoryImpl : PostRepository {
         data.value = posts
     }
 
-    override fun likeById(id: Long) {
+    override fun likeById(id: Long?) {
         posts = posts.map {
             if (it.id != id) it else it.copy(
-                likedByMe = !it.likedByMe, likes = if (it.likedByMe) {
-                    it.likes - 1
+                likedByMe = !it.likedByMe!!, likes = if (it.likedByMe!!) {
+                    it.likes!! - 1
                 } else {
-                    it.likes + 1
+                    it.likes!! + 1
                 }
             )
         }
         data.value = posts
     }
 
-    override fun replyById(id: Long) {
+    override fun replyById(id: Long?) {
         posts = posts.map {
             if (it.id != id) it else it.copy(
-                replyByMe = !it.replyByMe, replys = if (it.replyByMe) {
-                    it.replys - 1000
+                replyByMe = !it.replyByMe!!, replys = if (it.replyByMe!!) {
+                    it.replys!! - 1000
                 } else {
-                    it.replys + 1000
+                    it.replys!! + 1000
                 }
             )
         }
         data.value = posts
     }
 
-    override fun removeById(id: Long) {
+    override fun removeById(id: Long?) {
         posts = posts.filter { it.id != id }
         data.value = posts
     }
