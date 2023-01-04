@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.R
-import ru.netology.nmedia.activity.PostService
+import ru.netology.nmedia.activity.PostService.Companion.getFormatedNumber
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
 
@@ -18,9 +18,9 @@ interface OnInteractionListener {
     fun onReply(post: Post) {}
     fun onRemove(post: Post) {}
     fun onVideoClick(post: Post){}
+    fun onPost(post: Post){}
 }
 
-var ps = PostService()
 
 class PostsAdapter(
     private val onInteractionListener: OnInteractionListener,
@@ -50,8 +50,8 @@ class PostViewHolder(
             content.text = post.content
             like.isChecked = post.likedByMe!!
             reply.isChecked = post.replyByMe!!
-            like.text = ps.getFormatedNumber(post.likes)
-            reply.text = ps.getFormatedNumber(post.replys)
+            like.text = getFormatedNumber(post.likes)
+            reply.text = getFormatedNumber(post.replys)
             playGroup.visibility = if (post.video.isNullOrBlank()) View.GONE else View.VISIBLE
 
             menu.setOnClickListener {
@@ -84,6 +84,9 @@ class PostViewHolder(
             }
             prewievImage.setOnClickListener {
                 onInteractionListener.onVideoClick(post)
+            }
+            content.setOnClickListener{
+                onInteractionListener.onPost(post)
             }
         }
     }

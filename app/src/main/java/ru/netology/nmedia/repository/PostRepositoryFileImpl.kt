@@ -52,6 +52,10 @@ class PostRepositoryFileImpl(
         sync()
     }
 
+    override fun getPost(id: Long?): Post {
+        return posts.single { it.id == id }
+    }
+
     override fun likeById(id: Long?) {
         posts = posts.map {
             if (it.id != id) it else it.copy(
