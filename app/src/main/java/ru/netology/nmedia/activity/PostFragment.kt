@@ -44,7 +44,9 @@ class PostFragment : Fragment() {
             }
 
             override fun onLike(post: Post) {
-                post.id?.let { viewModel.likeById(it) }
+                post.id?.let {
+                    viewModel.likeById(it)
+                }
             }
 
             override fun onReply(post: Post) {
@@ -126,6 +128,10 @@ class PostFragment : Fragment() {
                         }
                     }
                 }.show()
+            }
+            viewModel.data.observe(viewLifecycleOwner) { posts ->
+                like.text = posts[0].likes.toString()
+                reply.text = posts[0].replys.toString()
             }
         }
         return binding.root
