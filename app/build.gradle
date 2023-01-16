@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
+    id 'com.google.gms.google-services'
 }
 android {
     namespace 'ru.netology.nmedia'
@@ -33,20 +34,23 @@ android {
 dependencies {
 
     def core_version = "1.9.0"
-    def appcompat_version = "1.5.1"
+    def appcompat_version = "1.6.0"
     def mdc_version = "1.7.0"
     def constraintlayout_version = "2.1.4"
     def recyclerview_version = "1.2.1"
     def junit_version = "4.13.2"
-    def ext_junit_version = "1.1.4"
-    def espresso_core_version = "3.5.0"
+    def ext_junit_version = "1.1.5"
+    def espresso_core_version = "3.5.1"
     def activity_version = "1.6.1"
     def lifecycle_version = "2.5.1"
     def gson_version = "2.10"
     def nav_version = "2.5.3"
-    def room_version = "2.4.3"
+    def room_version = "2.5.0"
     def okhttp_version = "4.10.0"
     def glide_version = "4.14.2"
+    def firebase_bom_version = "31.1.1"
+    def play_services_base_version="18.1.0"
+
 
     implementation "androidx.core:core-ktx:$core_version"
     implementation "androidx.appcompat:appcompat:$appcompat_version"
@@ -64,6 +68,9 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
     implementation("com.github.bumptech.glide:glide:$glide_version")
+    implementation platform("com.google.firebase:firebase-bom:$firebase_bom_version")
+    implementation"com.google.android.gms:play-services-base:$play_services_base_version"
+    implementation "com.google.firebase:firebase-messaging-ktx"
 
     testImplementation "junit:junit:$junit_version"
     androidTestImplementation "androidx.test.ext:junit:$ext_junit_version"

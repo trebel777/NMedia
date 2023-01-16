@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "573986120061",
+    "project_id": "nmediatrebel",
+    "storage_bucket": "nmediatrebel.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:573986120061:android:85b57e00fa2397f3da6c14",
+        "android_client_info": {
+          "package_name": "ru.netology.nmedia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "573986120061-s15am7jvetj64q12g9ggmph1798m42lf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFN4-pWAWcZgihX7-KDol8MSUuw9VU_f0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "573986120061-s15am7jvetj64q12g9ggmph1798m42lf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
