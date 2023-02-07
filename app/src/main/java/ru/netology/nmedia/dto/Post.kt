@@ -8,6 +8,6 @@ data class Post(
     val video: String? = "",
     var likes: Long?,
     var replys: Long?,
-    var replyByMe: Boolean? = false,
-    var likedByMe: Boolean? = false
+    var replyByMe: Boolean?,
+    var likedByMe: Boolean?
 )
