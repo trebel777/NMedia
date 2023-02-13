@@ -35,7 +35,7 @@ class PostRepositoryImpl: PostRepository {
             }
     }
 
-    override fun likeById(id: Long?) {
+    override fun likeById(id: Long?): Post {
         val requestGetPost: Request = Request.Builder()
             .url("${BASE_URL}/api/posts/$id")
             .build()
@@ -56,9 +56,12 @@ class PostRepositoryImpl: PostRepository {
                 .url("${BASE_URL}/api/posts/$id/likes")
                 .build()
         }
-        client.newCall(requestLike)
+        return client.newCall(requestLike)
             .execute()
-            .close()
+            .let { it.body?.string() ?: throw RuntimeException("body is null") }
+            .let {
+                gson.fromJson(it, Post::class.java)
+            }
     }
 
     override fun replyById(id: Long?) {
@@ -91,32 +94,5 @@ class PostRepositoryImpl: PostRepository {
             .close()
     }
 }
-//class PostRepositoryImpl(
-//    private val dao: PostDao,
-//) : PostRepository {
-//    override fun getAll() = Transformations.map(dao.getAll()) { list ->
-//        list.map {
-//            it.toDto()
-//        }
-//    }
-//
-//    override fun likeById(id: Long?) {
-//        dao.likeById(id!!)
-//    }
-//
-//    override fun replyById(id: Long?) {
-//        dao.replyById(id!!)
-//    }
-//
-//    override fun removeById(id: Long?) {
-//        dao.removeById(id!!)
-//    }
-//
-//    override fun save(post: Post) {
-//        dao.save(PostEntity.fromDto(post))
-//    }
-//
-//    override fun getPost(id: Long?)= dao.getPost(id!!).toDto()
-//    }
 
 

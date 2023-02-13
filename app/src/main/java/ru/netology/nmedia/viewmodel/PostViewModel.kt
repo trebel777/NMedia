@@ -81,10 +81,27 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun likeById(id: Long?) {
         thread {
-            repository.likeById(id)
-            loadPosts()
+            try {
+                val post = repository.likeById(id)
+
+                val posts = _data.value?.posts.orEmpty().map { postnew ->
+                    if (postnew.id == id) {
+                        postnew.copy(
+                            likedByMe = post.likedByMe,
+                            likes = post.likes
+                        )
+                    } else {
+                        postnew
+                    }
+                }
+                FeedModel(posts = posts)
+            } catch (e: IOException) {
+                FeedModel(error = true)
+            }.also(_data::postValue)
+
         }
     }
+
     fun replyById(id: Long?) {
         thread {
             repository.replyById(id)
