@@ -6,13 +6,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.EditPostFragment.Companion.textArg
-import ru.netology.nmedia.activity.PostService.Companion.getFormatedNumber
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.databinding.FragmentPostBinding
 import ru.netology.nmedia.dto.Post
@@ -21,10 +19,8 @@ import ru.netology.nmedia.viewmodel.PostViewModel
 
 class PostFragment : Fragment() {
 
-    val viewModel: PostViewModel by viewModels(
-        ownerProducer = ::requireParentFragment
-    )
-
+    val viewModel: PostViewModel by activityViewModels()
+    
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -80,60 +76,60 @@ class PostFragment : Fragment() {
         }
         val post = viewModel.getPost(arguments?.textArg!!.toLong())
 
-        binding.post.apply {
-            author.text = post.author
-            published.text = post.published
-            content.text = post.content
-            like.isChecked = post.likedByMe!!
-            reply.isChecked = post.replyByMe!!
-            like.text = getFormatedNumber(post.likes)
-            reply.text = getFormatedNumber(post.replys)
-            playGroup.visibility = if (post.video.isNullOrBlank()) View.GONE else View.VISIBLE
-            playGroup.setOnClickListener {
-                onInteractionListener.onVideoClick(post)
-            }
-            playImage.setOnClickListener{
-                onInteractionListener.onVideoClick(post)
-            }
-            prewievImage.setOnClickListener {
-                onInteractionListener.onVideoClick(post)
-            }
-            like.setOnClickListener {
-                onInteractionListener.onLike(post)
-            }
-            reply.setOnClickListener {
-                onInteractionListener.onReply(post)
-            }
-
-            menu.setOnClickListener {
-                PopupMenu(it.context, it).apply {
-                    inflate(R.menu.options_post)
-                    setOnMenuItemClickListener { item ->
-                        when (item.itemId) {
-                            R.id.remove -> {
-                                viewModel.removeById(post.id)
-                                findNavController().navigateUp()
-                                true
-                            }
-                            R.id.edit -> {
-                                viewModel.edit(post)
-                                findNavController().navigate(R.id.action_postFragment_to_newPostFragment,
-                                    Bundle().apply {
-                                        textArg = post.content
-                                    })
-                                true
-                            }
-
-                            else -> false
-                        }
-                    }
-                }.show()
-            }
-            viewModel.data.observe(viewLifecycleOwner) { posts ->
-                like.text = posts[0].likes.toString()
-                reply.text = posts[0].replys.toString()
-            }
-        }
+//        binding.post.apply {
+//            author.text =
+//            published.text = post.published
+//            content.text = post.content
+//            like.isChecked = post.likedByMe!!
+//            reply.isChecked = post.replyByMe!!
+//            like.text = getFormatedNumber(post.likes)
+//            reply.text = getFormatedNumber(post.replys)
+//            playGroup.visibility = if (post.video.isNullOrBlank()) View.GONE else View.VISIBLE
+//            playGroup.setOnClickListener {
+//                onInteractionListener.onVideoClick(post)
+//            }
+//            playImage.setOnClickListener{
+//                onInteractionListener.onVideoClick(post)
+//            }
+//            prewievImage.setOnClickListener {
+//                onInteractionListener.onVideoClick(post)
+//            }
+//            like.setOnClickListener {
+//                onInteractionListener.onLike(post)
+//            }
+//            reply.setOnClickListener {
+//                onInteractionListener.onReply(post)
+//            }
+//
+//            menu.setOnClickListener {
+//                PopupMenu(it.context, it).apply {
+//                    inflate(R.menu.options_post)
+//                    setOnMenuItemClickListener { item ->
+//                        when (item.itemId) {
+//                            R.id.remove -> {
+//                                viewModel.removeById(post.id)
+//                                findNavController().navigateUp()
+//                                true
+//                            }
+//                            R.id.edit -> {
+//                                viewModel.edit(post)
+//                                findNavController().navigate(R.id.action_postFragment_to_newPostFragment,
+//                                    Bundle().apply {
+//                                        textArg = post.content
+//                                    })
+//                                true
+//                            }
+//
+//                            else -> false
+//                        }
+//                    }
+//                }.show()
+//            }
+//            viewModel.data.observe(viewLifecycleOwner) { posts ->
+//                like.text = posts[0].likes.toString()
+//                reply.text = posts[0].replys.toString()
+//            }
+//    }
         return binding.root
     }
 }

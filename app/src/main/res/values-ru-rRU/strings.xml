@@ -23,5 +23,8 @@
     <string name="channel_remote_description">Уведомления с удалённого сервера</string>
     <string name="notification_new_post">%1$s опубликовал новый пост</string>
     <string name="notification_unsupported">Неподдерживаемое действие</string>
+    <string name="retry_loading">Повторить</string>
+    <string name="empty_posts">Постов нет.\nЕсли Вы сделаете пост, он появится здест</string>
+    <string name="error_loading">Что-то пошло не так. Попробуйте еще раз позднее</string>
 
 </resources>

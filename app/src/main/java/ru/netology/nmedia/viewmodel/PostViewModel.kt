@@ -2,11 +2,15 @@ package ru.netology.nmedia.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryImpl
+import ru.netology.nmedia.util.SingleLiveEvent
+import java.io.IOException
+import kotlin.concurrent.thread
 
 private val empty = Post(
     id = 0,
@@ -23,12 +27,37 @@ private val empty = Post(
 class PostViewModel(application: Application) : AndroidViewModel(application) {
     val edited = MutableLiveData(empty)
     private val repository: PostRepository = PostRepositoryImpl(
-        AppDb.getInstance(context = application).postDao()
     )
-    val data = repository.getAll()
+    private val _data = MutableLiveData(FeedModel())
+    val data: LiveData<FeedModel>
+        get() = _data
+    private val _postCreated = SingleLiveEvent<Unit>()
+    val postCreated: LiveData<Unit>
+    get() = _postCreated
+
+    init {
+        loadPosts()
+    }
+
+    fun loadPosts() {
+        thread {
+            _data.postValue(FeedModel(loading = true))
+            try {
+                val posts = repository.getAll()
+                FeedModel(posts = posts, empty = posts.isEmpty())
+            } catch (e: IOException) {
+                FeedModel(error = true)
+            }.also(_data::postValue)
+        }
+    }
+
     fun save() {
         edited.value?.let {
-            repository.save(it)
+            thread {
+                repository.save(it)
+                _postCreated.postValue(Unit)
+                loadPosts()
+            }
         }
         edited.value = empty
     }
@@ -50,10 +79,43 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
-    fun likeById(id: Long?) = repository.likeById(id)
-    fun replyById(id: Long?) = repository.replyById(id)
-    fun removeById(id: Long?) = repository.removeById(id)
-    fun getPost(id: Long?) = repository.getPost(id)
+    fun likeById(id: Long) {
+        thread {
+        val post = data.value?.posts?.find { it.id == id } ?: empty
+                val likedPost = repository.likeById(post)
+                _data.postValue(
+                    _data.value?.copy(posts = _data.value?.posts.orEmpty()
+                        .map { if (it.id == id) likedPost else it }
+                    )
+                )
+        }
+    }
+
+    fun replyById(id: Long?) {
+        thread {
+            repository.replyById(id)
+            loadPosts()
+        }
+    }
+    fun removeById(id: Long?) {
+        thread {
+            val old = _data.value?.posts.orEmpty()
+            _data.postValue(_data.value?.copy(posts = _data.value?.posts.orEmpty()
+                .filter { it.id != id }
+            ))
+            try {
+                repository.removeById(id)
+            }catch (e: IOException){
+                _data.postValue(_data.value?.copy(posts = old))
+            }
+            loadPosts()
+        }
+    }
+    fun getPost(id: Long?) {
+        thread {
+            repository.getPost(id)
+        }
+    }
 }
 
 

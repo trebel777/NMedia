@@ -6,6 +6,6 @@ plugins {
     id 'com.google.gms.google-services' version '4.3.14' apply false
 
 }
-//task clean(type: Delete){
-//    delete rootProject.buildDir
-//}
+task clean(type: Delete){
+    delete rootProject.buildDir
+}

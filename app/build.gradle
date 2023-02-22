@@ -21,6 +21,10 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            manifestPlaceholders.usesCleartextTraffic = false
+        }
+        debug {
+            manifestPlaceholders.usesCleartextTraffic = true
         }
     }
     compileOptions {
@@ -50,6 +54,7 @@ dependencies {
     def glide_version = "4.14.2"
     def firebase_bom_version = "31.1.1"
     def play_services_base_version="18.1.0"
+    def swiperefreshlayout_version = "1.1.0"
 
 
     implementation "androidx.core:core-ktx:$core_version"
@@ -71,6 +76,7 @@ dependencies {
     implementation platform("com.google.firebase:firebase-bom:$firebase_bom_version")
     implementation"com.google.android.gms:play-services-base:$play_services_base_version"
     implementation "com.google.firebase:firebase-messaging-ktx"
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:$swiperefreshlayout_version")
 
     testImplementation "junit:junit:$junit_version"
     androidTestImplementation "androidx.test.ext:junit:$ext_junit_version"
