@@ -9,8 +9,7 @@ import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryImpl
 import ru.netology.nmedia.util.SingleLiveEvent
-import java.io.IOException
-import kotlin.concurrent.thread
+
 
 private val empty = Post(
     id = 0,
@@ -40,27 +39,38 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun loadPosts() {
-        thread {
-            _data.postValue(FeedModel(loading = true))
-            try {
-                val posts = repository.getAll()
-                FeedModel(posts = posts, empty = posts.isEmpty())
-            } catch (e: IOException) {
-                FeedModel(error = true)
-            }.also(_data::postValue)
-        }
+        _data.value = FeedModel(loading = true)
+        repository.getAll(object : PostRepository.Callback<List<Post>> {
+            override fun onSuccess(posts: List<Post>) {
+                _data.postValue(FeedModel(posts = posts, empty = posts.isEmpty()))
+            }
+            override fun onError(e: Exception) {
+                _data.postValue(FeedModel(error = true))
+            }
+        })
     }
 
     fun save() {
-        edited.value?.let {
-            thread {
-                repository.save(it)
-                _postCreated.postValue(Unit)
-                loadPosts()
-            }
+        edited.value?.let { editedPost ->
+            val newStatePosts = _data.value?.posts.orEmpty()
+                .map { if (it.id == editedPost.id) editedPost else it }
+            repository.save(editedPost, object : PostRepository.Callback<Unit> {
+                override fun onSuccess(value: Unit) {
+                    _postCreated.postValue(Unit)
+                    _data.postValue(FeedModel(posts = newStatePosts))
+                }
+
+                override fun onError(e: Exception) {
+                    loadPosts()
+                    _data.postValue(FeedModel(error = true))
+                }
+            })
         }
         edited.value = empty
     }
+
+
+
 
     fun edit(post: Post) {
         edited.value = post
@@ -78,43 +88,45 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         edited.value = empty
     }
 
-
     fun likeById(id: Long) {
-        thread {
         val post = data.value?.posts?.find { it.id == id } ?: empty
-                val likedPost = repository.likeById(post)
+        repository.likeById(post, object : PostRepository.Callback<Post>{
+            override fun onSuccess(data: Post) {
                 _data.postValue(
                     _data.value?.copy(posts = _data.value?.posts.orEmpty()
-                        .map { if (it.id == id) likedPost else it }
-                    )
+                        .map { if (it.id == id) data else it }
                 )
-        }
+                )
+            }
+            override fun onError(e: Exception) {
+                _data.postValue(FeedModel(error = true))
+            }
+        })
     }
 
     fun replyById(id: Long?) {
-        thread {
-            repository.replyById(id)
-            loadPosts()
-        }
+            TODO()
+
     }
     fun removeById(id: Long?) {
-        thread {
             val old = _data.value?.posts.orEmpty()
             _data.postValue(_data.value?.copy(posts = _data.value?.posts.orEmpty()
                 .filter { it.id != id }
             ))
-            try {
-                repository.removeById(id)
-            }catch (e: IOException){
-                _data.postValue(_data.value?.copy(posts = old))
+        repository.removeById(id, object : PostRepository.Callback<Unit>{
+            override fun onSuccess(data: Unit) {
+                _data.postValue(FeedModel(posts = old))
             }
-            loadPosts()
+
+            override fun onError(e: Exception) {
+                loadPosts()
+                _data.postValue(FeedModel(error = true))
+            }
+        })
         }
-    }
+
     fun getPost(id: Long?) {
-        thread {
-            repository.getPost(id)
-        }
+            TODO()
     }
 }
 
