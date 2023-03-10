@@ -45,7 +45,7 @@ class PostViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     companion object {
-        private const val BASE_URL = "http://10.0.2.2:9999"
+        private const val BASE_URL = "http://10.0.2.2:8080"
     }
 
     fun bind(post: Post) {
@@ -67,7 +67,7 @@ class PostViewHolder(
                 .into(binding.avatar)
             if(post.attachment?.url != null) {
                 Glide.with(imageAttachment)
-                    .load("${BASE_URL}/images/${post.attachment?.url}")
+                    .load("${BASE_URL}/images/${post.attachment.url}")
                     .placeholder(R.drawable.ic_loading_100dp)
                     .error(R.drawable.ic_error_100dp)
                     .timeout(10_000)

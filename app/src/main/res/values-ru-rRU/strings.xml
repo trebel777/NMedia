@@ -26,5 +26,6 @@
     <string name="retry_loading">Повторить</string>
     <string name="empty_posts">Постов нет.\nЕсли Вы сделаете пост, он появится здест</string>
     <string name="error_loading">Что-то пошло не так. Попробуйте еще раз позднее</string>
+    <string name="error_text">Код ошибки: %1$s, текст ошибки: %2$s</string>
 
 </resources>
