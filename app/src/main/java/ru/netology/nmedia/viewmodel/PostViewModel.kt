@@ -26,8 +26,7 @@ private val empty = Post(
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
     val edited = MutableLiveData(empty)
-    private val repository: PostRepository = PostRepositoryImpl(
-    )
+    private val repository: PostRepository = PostRepositoryImpl(application)
     private val _data = MutableLiveData(FeedModel())
     val data: LiveData<FeedModel>
         get() = _data
@@ -46,24 +45,20 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 _data.postValue(FeedModel(posts = posts, empty = posts.isEmpty()))
             }
             override fun onError(e: Exception) {
-                _data.postValue(FeedModel(error = true))
+                _data.postValue(FeedModel(error = true, errorText = e.toString()))
             }
         })
     }
 
     fun save() {
-        edited.value?.let { editedPost ->
-            val newStatePosts = _data.value?.posts.orEmpty()
-                .map { if (it.id == editedPost.id) editedPost else it }
-            repository.save(editedPost, object : PostRepository.Callback<Unit> {
-                override fun onSuccess(value: Unit) {
+        edited.value?.let {
+            repository.save(it, object : PostRepository.Callback<Post> {
+                override fun onSuccess(post: Post) {
                     _postCreated.postValue(Unit)
-                    _data.postValue(FeedModel(posts = newStatePosts))
                 }
-
                 override fun onError(e: Exception) {
-                    loadPosts()
-                    _data.postValue(FeedModel(error = true))
+                    _postCreated.postValue(Unit)
+                    _data.postValue(FeedModel(error = true, errorText = e.toString()))
                 }
             })
         }
@@ -100,7 +95,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 )
             }
             override fun onError(e: Exception) {
-                _data.postValue(FeedModel(error = true))
+                _data.postValue(FeedModel(error = true, errorText = e.toString()))
             }
         })
     }
@@ -121,7 +116,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
             override fun onError(e: Exception) {
                 loadPosts()
-                _data.postValue(FeedModel(error = true))
+                _data.postValue(FeedModel(error = true, errorText = e.toString()))
             }
         })
         }
