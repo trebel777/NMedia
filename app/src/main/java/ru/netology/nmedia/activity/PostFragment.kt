@@ -41,7 +41,7 @@ class PostFragment : Fragment() {
 
             override fun onLike(post: Post) {
                 post.id?.let {
-                    viewModel.likeById(it)
+                    viewModel.likeById(post)
                 }
             }
 
@@ -58,7 +58,7 @@ class PostFragment : Fragment() {
             }
 
             override fun onRemove(post: Post) {
-                viewModel.removeById(post.id)
+                viewModel.removeById(post)
             }
 
             override fun onVideoClick(post: Post) {
