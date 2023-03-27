@@ -2,23 +2,26 @@ package ru.netology.nmedia.repository
 
 
 import android.app.Application
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.map
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
 import ru.netology.nmedia.api.PostsApi
 import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.entity.toDto
 import ru.netology.nmedia.entity.toEntity
+import ru.netology.nmedia.entity.toEntityNew
 import ru.netology.nmedia.error.ApiError
+import ru.netology.nmedia.error.AppError
 import ru.netology.nmedia.error.NetworkError
 import java.io.IOException
 import ru.netology.nmedia.error.UnknownError
 
-
-class PostRepositoryImpl(private val dao: PostDao, private val application: Application): PostRepository {
-    override val data: LiveData<List<Post>> = dao.getAll().map(List<PostEntity>::toDto)
-
+class PostRepositoryImpl(private val dao: PostDao, private val application: Application): PostRepository{
+    override val data = dao.getAll()
+        .map(List<PostEntity>::toDto)
+        .flowOn(Dispatchers.Default)
     override suspend fun getAll() {
         try {
             val response = PostsApi.retrofitService.getAll()
@@ -34,6 +37,29 @@ class PostRepositoryImpl(private val dao: PostDao, private val application: Appl
             throw UnknownError
         }
     }
+
+    override fun getNewerCount(id: Long): Flow<Int> = flow {
+        while (true) {
+            delay(10_000L)
+            val response = PostsApi.retrofitService.getNewer(id)
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
+
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
+            dao.insert(body.toEntityNew())
+            emit(newerCount())
+        }
+    }
+        .catch { e -> throw AppError.from(e) }
+        .flowOn(Dispatchers.Default)
+
+    override suspend fun readNewPosts() {
+        dao.readNewPosts()
+    }
+
+    override suspend fun newerCount(): Int = dao.newerCount()
+    override suspend fun postsCount(): Int = dao.postsCount()
 
     override suspend fun likeById(post: Post) : Post {
         try {

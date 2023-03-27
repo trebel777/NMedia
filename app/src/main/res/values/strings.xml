@@ -26,5 +26,7 @@
     <string name="empty_posts">There are no posts.\nIf you create a new post, it will appear here</string>
     <string name="error_loading">Something went wrong. Try again later</string>
     <string name="error_text">Error code: %1$s, error text: %2$s</string>
+    <string name="new_posts">New posts</string>
+
 
 </resources>

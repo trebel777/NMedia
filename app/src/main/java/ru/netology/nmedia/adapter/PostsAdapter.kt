@@ -27,7 +27,6 @@ interface OnInteractionListener {
 class PostsAdapter(
     private val onInteractionListener: OnInteractionListener,
 ) : ListAdapter<Post, PostViewHolder>(PostDiffCallback()) {
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val binding = CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return PostViewHolder(binding, onInteractionListener)
