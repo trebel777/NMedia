@@ -21,31 +21,29 @@ private val empty = Post(
     author = "",
     authorAvatar = "",
     likes = 0,
-    replys = 0,
     likedByMe = false,
-    replyByMe = false,
-    published = ""
+    published = 0
 
 )
 class PostViewModel(application: Application) : AndroidViewModel(application) {
-
     private val repository: PostRepository =
-        PostRepositoryImpl(AppDb.getInstance(context = application).postDao(), application)
+        PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
 
     val data: LiveData<FeedModel> = repository.data
         .map(::FeedModel)
         .asLiveData(Dispatchers.Default)
+
     private val _dataState = MutableLiveData<FeedModelState>()
     val dataState: LiveData<FeedModelState>
         get() = _dataState
 
     val newerCount: LiveData<Int> = data.switchMap {
-        repository.getNewerCount(it.posts.size.toLong() ?: 0L)
+        repository.getNewerCount(it.posts.firstOrNull()?.id ?: 0L)
             .catch { e -> e.printStackTrace() }
-            .asLiveData(Dispatchers.Default, 1_000)
+            .asLiveData(Dispatchers.Default)
     }
 
-    val edited = MutableLiveData(empty)
+    private val edited = MutableLiveData(empty)
     private val _postCreated = SingleLiveEvent<Unit>()
     val postCreated: LiveData<Unit>
         get() = _postCreated

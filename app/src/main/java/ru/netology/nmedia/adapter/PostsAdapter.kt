@@ -46,10 +46,10 @@ class PostViewHolder(
     fun bind(post: Post) {
         binding.apply {
             author.text = post.author
-            published.text = post.published
+            published.text = post.published.toString()
             content.text = post.content
-            like.isChecked = post.likedByMe!!
-            reply.isChecked = post.replyByMe!!
+            like.isChecked = post.likedByMe
+            reply.isChecked = post.replyByMe
             like.text = getFormatedNumber(post.likes)
             reply.text = getFormatedNumber(post.replys)
             playGroup.visibility = if (post.video.isNullOrBlank()) View.GONE else View.VISIBLE

@@ -1,7 +1,6 @@
 package ru.netology.nmedia.repository
 
 
-import android.app.Application
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -18,10 +17,11 @@ import ru.netology.nmedia.error.NetworkError
 import java.io.IOException
 import ru.netology.nmedia.error.UnknownError
 
-class PostRepositoryImpl(private val dao: PostDao, private val application: Application): PostRepository{
+class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
     override val data = dao.getAll()
         .map(List<PostEntity>::toDto)
         .flowOn(Dispatchers.Default)
+
     override suspend fun getAll() {
         try {
             val response = PostsApi.retrofitService.getAll()
@@ -63,8 +63,8 @@ class PostRepositoryImpl(private val dao: PostDao, private val application: Appl
 
     override suspend fun likeById(post: Post) : Post {
         try {
-            likeByIdLocal(post.id!!)
-            val response = if (!post.likedByMe!!) {
+            likeByIdLocal(post.id)
+            val response = if (!post.likedByMe) {
                 PostsApi.retrofitService.likeById(post.id)
             } else{
                 PostsApi.retrofitService.dislikeById(post.id)
@@ -75,10 +75,10 @@ class PostRepositoryImpl(private val dao: PostDao, private val application: Appl
             val body = response.body() ?: throw ApiError(response.code(), response.message())
             return body
         } catch (e: IOException) {
-            likeByIdLocal(post.id!!)
+            likeByIdLocal(post.id)
             throw NetworkError
         } catch (e: Exception) {
-            likeByIdLocal(post.id!!)
+            likeByIdLocal(post.id)
             throw UnknownError
         }
     }
@@ -91,7 +91,7 @@ class PostRepositoryImpl(private val dao: PostDao, private val application: Appl
     override suspend fun removeById(post: Post) {
         val postRemoved = post.copy()
         try {
-            dao.removeById(post.id!!)
+            dao.removeById(post.id)
             val response = PostsApi.retrofitService.removeById(post.id)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
