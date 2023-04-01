@@ -52,6 +52,14 @@ class FeedFragment : Fragment() {
                     Intent.createChooser(intent, getString(R.string.chooser_share_post))
                 startActivity(shareIntent)
             }
+            override fun onPhotoClick(post: Post) {
+                val bundle = Bundle()
+                bundle.putLong("postId", post.id)
+                bundle.putString("uri", post.attachment?.url)
+                val navController = findNavController()
+                navController.navigate(R.id.action_feedFragment_to_showPhotoFragment, bundle)
+            }
+
         })
         binding.list.adapter = adapter
         viewModel.dataState.observe(viewLifecycleOwner) { state ->

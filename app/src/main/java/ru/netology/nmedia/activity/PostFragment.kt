@@ -40,7 +40,7 @@ class PostFragment : Fragment() {
             }
 
             override fun onLike(post: Post) {
-                post.id?.let {
+                post.id.let {
                     viewModel.likeById(post)
                 }
             }

@@ -27,6 +27,11 @@
     <string name="error_loading">Something went wrong. Try again later</string>
     <string name="error_text">Error code: %1$s, error text: %2$s</string>
     <string name="new_posts">New posts</string>
+    <string name="save">Save</string>
+    <string name="description_select_photo">Select photo</string>
+    <string name="description_take_photo">Take photo</string>
+    <string name="description_photo">Photo</string>
+    <string name="remove">Remove</string>
 
 
 </resources>

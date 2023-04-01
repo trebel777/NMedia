@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +22,7 @@ interface OnInteractionListener {
     fun onRemove(post: Post) {}
     fun onVideoClick(post: Post) {}
     fun onPost(post: Post){}
+    fun onPhotoClick(post: Post) {}
 }
 
 
@@ -62,12 +64,15 @@ class PostViewHolder(
                 .into(binding.avatar)
             if(post.attachment?.url != null) {
                 Glide.with(imageAttachment)
-                    .load("${BuildConfig.BASE_URL}/images/${post.attachment.url}")
+                    .load("${BuildConfig.BASE_URL}/media/${post.attachment.url}")
                     .placeholder(R.drawable.ic_loading_100dp)
                     .error(R.drawable.ic_error_100dp)
                     .timeout(10_000)
                     .fitCenter()
                     .into(binding.imageAttachment)
+            }else{
+                imageAttachment.isVisible = false
+                Glide.with(imageAttachment).clear(binding.imageAttachment)
             }
 
             menu.setOnClickListener {
@@ -103,6 +108,9 @@ class PostViewHolder(
             }
             content.setOnClickListener{
                 onInteractionListener.onPost(post)
+            }
+            imageAttachment.setOnClickListener {
+                onInteractionListener.onPhotoClick(post)
             }
         }
     }
