@@ -21,6 +21,12 @@
             android:id="@+id/action_feedFragment_to_showPhotoFragment"
             app:destination="@id/showPhotoFragment" />
         <action
+            android:id="@+id/action_feedFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
+        <action
+            android:id="@+id/action_feedFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
+        <action
             android:id="@+id/action_feedFragment_to_postFragment"
             app:destination="@id/postFragment"
             app:enterAnim="@android:anim/fade_in"
@@ -43,6 +49,16 @@
             android:id="@+id/action_showPhotoFragment_to_feedFragment"
             app:destination="@id/feedFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/signInFragment"
+        android:name="ru.netology.nmedia.activity.SignInFragment"
+        android:label="sign_in_fragment"
+        tools:layout="@layout/fragment_sign_up" />
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="ru.netology.nmedia.activity.SignUpFragment"
+        android:label="fragment_sign_up"
+        tools:layout="@layout/fragment_sign_up" />
     <fragment
         android:id="@+id/postFragment"
         android:name="ru.netology.nmedia.activity.PostFragment"

@@ -18,6 +18,7 @@ import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.util.StringArg
 import ru.netology.nmedia.viewmodel.PostViewModel
 
+
 class EditPostFragment() : Fragment() {
     companion object {
         var Bundle.textArg: String? by StringArg

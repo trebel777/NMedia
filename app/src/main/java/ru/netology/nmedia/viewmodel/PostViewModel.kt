@@ -2,11 +2,15 @@ package ru.netology.nmedia.viewmodel
 
 import android.app.Application
 import android.net.Uri
+import androidx.core.net.toFile
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.MediaUpload
 import ru.netology.nmedia.dto.Post
@@ -21,6 +25,7 @@ import java.io.File
 
 private val empty = Post(
     id = 0,
+    authorId = 0L,
     content = "",
     author = "",
     authorAvatar = "",
@@ -30,13 +35,20 @@ private val empty = Post(
 
 )
 private val noPhoto = PhotoModel()
+
 class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: PostRepository =
         PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
 
-    val data: LiveData<FeedModel> = repository.data
-        .map(::FeedModel)
-        .asLiveData(Dispatchers.Default)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val data: LiveData<FeedModel> = AppAuth.getInstance().authStateFlow.flatMapLatest { authState ->
+        repository.data
+            .map { posts ->
+                FeedModel(posts.map {
+                    it.copy(ownedByMe = authState.id == it.authorId)
+                }, posts.isEmpty())
+            }
+    }.asLiveData(Dispatchers.Default)
 
     private val _dataState = MutableLiveData<FeedModelState>()
     val dataState: LiveData<FeedModelState>
@@ -87,10 +99,10 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             _postCreated.value = Unit
             viewModelScope.launch {
                 try {
-                    when(_photo.value) {
+                    when (_photo.value) {
                         noPhoto -> repository.save(it)
-                        else -> _photo.value?.file?.let { file ->
-                            repository.saveWithAttachment(it, MediaUpload(file))
+                        else -> _photo.value?.uri?.let { uri ->
+                            repository.saveWithAttachment(it, MediaUpload(uri.toFile()))
                         }
                     }
                     _dataState.value = FeedModelState()
@@ -102,6 +114,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         edited.value = empty
         _photo.value = noPhoto
     }
+
+
     fun changePhoto(uri: Uri?, file: File?) {
         _photo.value = PhotoModel(uri, file)
     }
@@ -117,6 +131,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         }
         edited.value = edited.value?.copy(content = text)
     }
+
     fun cancelEdit() {
         edited.value = empty
     }
@@ -127,10 +142,10 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             repository.likeById(post)
             _dataState.value = FeedModelState()
         } catch (e: Exception) {
-
             _dataState.value = FeedModelState(error = true)
         }
     }
+
     fun replyById(id: Long?) {
         TODO()
 
@@ -150,6 +165,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun readNewPosts() = viewModelScope.launch {
         repository.readNewPosts()
     }
+
     fun getPost(id: Long?) {
         TODO()
     }

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.R
@@ -15,11 +16,15 @@ import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.util.SignInDialogFragment
+import ru.netology.nmedia.viewmodel.AuthViewModel
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 class FeedFragment : Fragment() {
 
     private val viewModel: PostViewModel by activityViewModels()
+
+    val authViewModel: AuthViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,7 +39,11 @@ class FeedFragment : Fragment() {
             }
 
             override fun onLike(post: Post) {
-                viewModel.likeById(post)
+                if(!authViewModel.authorized){
+                    showSignInDialog()
+                }else {
+                    viewModel.likeById(post)
+                }
             }
 
             override fun onRemove(post: Post) {
@@ -94,7 +103,11 @@ class FeedFragment : Fragment() {
         }
 
         binding.fab.setOnClickListener {
-            findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            if (!authViewModel.authorized) {
+                showSignInDialog()
+            } else {
+                findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            }
         }
 
         binding.swipeRefreshLayout.setOnRefreshListener {
@@ -102,6 +115,10 @@ class FeedFragment : Fragment() {
             binding.swipeRefreshLayout.isRefreshing = false
         }
         return binding.root
+    }
+    fun showSignInDialog(){
+        val dialog = SignInDialogFragment()
+        dialog.show(getParentFragmentManager(), getString(R.string.authentication))
     }
 }
 

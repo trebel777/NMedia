@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import ru.netology.nmedia.api.PostsApi
+import ru.netology.nmedia.auth.AuthState
 import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.Media
@@ -161,6 +162,21 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
             )
 
             val response = PostsApi.retrofitService.upload(media)
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
+
+            return response.body() ?: throw ApiError(response.code(), response.message())
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+    override suspend fun updateUser(login: String, pass: String): AuthState {
+        try {
+
+            val response = PostsApi.retrofitService.updateUser(login, pass)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
