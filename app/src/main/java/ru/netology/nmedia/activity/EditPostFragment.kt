@@ -41,6 +41,7 @@ class EditPostFragment() : Fragment() {
                 fragmentBinding?.let {
                     viewModel.changeContent(it.edit.text.toString())
                     viewModel.save()
+                    findNavController().navigateUp()
                     AndroidUtils.hideKeyboard(requireView())
                 }
                 true

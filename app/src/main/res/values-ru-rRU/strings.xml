@@ -46,4 +46,8 @@
     <string name="dialog_signOut">Вы уверены, что хотите выйти?</string>
     <string name="auth_error">Ошибка при аутентификации</string>
     <string name="reg_error">Ошибка при регистрации</string>
+    <string name="upload_avatar">Загрузить аватар</string>
+    <string name="choose">Выбор</string>
+    <string name="gallry">Галерея</string>
+    <string name="photo">Фото</string>
 </resources>

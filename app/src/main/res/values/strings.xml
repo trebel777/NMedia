@@ -45,6 +45,10 @@
     <string name="dialog_signOut">Are you sure?</string>
     <string name="auth_error">Authentication error</string>
     <string name="reg_error">Registration error</string>
+    <string name="upload_avatar">Upload avatar</string>
+    <string name="choose">Choose</string>
+    <string name="gallery">Gallery</string>
+    <string name="photo">Photo</string>
 
 
 </resources>
