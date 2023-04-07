@@ -4,13 +4,22 @@ package ru.netology.nmedia.activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.core.view.MenuProvider
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.messaging.FirebaseMessaging
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.EditPostFragment.Companion.textArg
+import ru.netology.nmedia.auth.AppAuth
+import ru.netology.nmedia.util.SignOutDialogFragment
+import ru.netology.nmedia.viewmodel.AuthViewModel
 
 class AppActivity : AppCompatActivity(R.layout.activity_app) {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,6 +41,50 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
                 }
             )
         }
+
+        val authViewModel by viewModels<AuthViewModel>()
+
+        var previousMenuProvider: MenuProvider? = null
+        authViewModel.data.observe(this){
+            previousMenuProvider?.let(::removeMenuProvider)
+
+            addMenuProvider(object : MenuProvider{
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    menuInflater.inflate(R.menu.menu_auth, menu)
+
+                    menu.setGroupVisible(R.id.unauthorization, !authViewModel.authorized)
+                    menu.setGroupVisible(R.id.authorized, authViewModel.authorized)
+                }
+
+
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean  =
+                    when(menuItem.itemId){
+                        R.id.signIn ->{
+//                            val navHostFragment =
+//                                supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+//                            val navController = navHostFragment.navController
+//                            navController.navigate(R.id.action_feedFragment_to_signInFragment)
+                            AppAuth.getInstance().setAuth(5, "x-token")
+                            true
+                        }
+                        R.id.signUp ->{
+                            val navHostFragment =
+                                supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+                            val navController = navHostFragment.navController
+                            navController.navigate(R.id.action_feedFragment_to_signUpFragment)
+                            true
+                        }
+                        R.id.signOut -> {
+                            SignOutDialogFragment().show(supportFragmentManager, getString(R.string.sign_out))
+                            true
+                        }else -> false
+                    }
+
+            }.also {
+                previousMenuProvider = it
+            })
+        }
+
         checkGoogleApiAvailability()
     }
     private fun checkGoogleApiAvailability() {

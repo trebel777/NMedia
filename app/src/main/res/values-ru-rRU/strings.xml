@@ -27,5 +27,27 @@
     <string name="empty_posts">Постов нет.\nЕсли Вы сделаете пост, он появится здест</string>
     <string name="error_loading">Что-то пошло не так. Попробуйте еще раз позднее</string>
     <string name="error_text">Код ошибки: %1$s, текст ошибки: %2$s</string>
-
+    <string name="new_posts">Новые посты</string>
+    <string name="save">Сохранить</string>
+    <string name="description_select_photo">Выбрать фото</string>
+    <string name="description_take_photo">Сделать фото</string>
+    <string name="description_photo">Фото</string>
+    <string name="remove">Удалить</string>
+    <string name="sign_in">Вход</string>
+    <string name="sign_up">Регистрация</string>
+    <string name="sign_out">Выход</string>
+    <string name="login">Логин</string>
+    <string name="password">Пароль</string>
+    <string name="sign_in_dialog">Войдите, чтобы продолжить</string>
+    <string name="dialog_cancel">Отмена</string>
+    <string name="authentication">Аутентификация</string>
+    <string name="name">Имя</string>
+    <string name="repeat_password">Повторите пароль</string>
+    <string name="dialog_signOut">Вы уверены, что хотите выйти?</string>
+    <string name="auth_error">Ошибка при аутентификации</string>
+    <string name="reg_error">Ошибка при регистрации</string>
+    <string name="upload_avatar">Загрузить аватар</string>
+    <string name="choose">Выбор</string>
+    <string name="gallry">Галерея</string>
+    <string name="photo">Фото</string>
 </resources>

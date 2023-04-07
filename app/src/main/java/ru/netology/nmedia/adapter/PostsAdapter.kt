@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -21,13 +22,13 @@ interface OnInteractionListener {
     fun onRemove(post: Post) {}
     fun onVideoClick(post: Post) {}
     fun onPost(post: Post){}
+    fun onPhotoClick(post: Post) {}
 }
 
 
 class PostsAdapter(
     private val onInteractionListener: OnInteractionListener,
 ) : ListAdapter<Post, PostViewHolder>(PostDiffCallback()) {
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val binding = CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return PostViewHolder(binding, onInteractionListener)
@@ -47,10 +48,10 @@ class PostViewHolder(
     fun bind(post: Post) {
         binding.apply {
             author.text = post.author
-            published.text = post.published
+            published.text = post.published.toString()
             content.text = post.content
-            like.isChecked = post.likedByMe!!
-            reply.isChecked = post.replyByMe!!
+            like.isChecked = post.likedByMe
+            reply.isChecked = post.replyByMe
             like.text = getFormatedNumber(post.likes)
             reply.text = getFormatedNumber(post.replys)
             playGroup.visibility = if (post.video.isNullOrBlank()) View.GONE else View.VISIBLE
@@ -63,13 +64,19 @@ class PostViewHolder(
                 .into(binding.avatar)
             if(post.attachment?.url != null) {
                 Glide.with(imageAttachment)
-                    .load("${BuildConfig.BASE_URL}/images/${post.attachment.url}")
+                    .load("${BuildConfig.BASE_URL}/media/${post.attachment?.url}")
                     .placeholder(R.drawable.ic_loading_100dp)
                     .error(R.drawable.ic_error_100dp)
                     .timeout(10_000)
                     .fitCenter()
                     .into(binding.imageAttachment)
+            }else{
+                imageAttachment.isVisible = false
+                Glide.with(imageAttachment).clear(binding.imageAttachment)
             }
+
+            menu.isVisible = post.ownedByMe
+
 
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
@@ -104,6 +111,9 @@ class PostViewHolder(
             }
             content.setOnClickListener{
                 onInteractionListener.onPost(post)
+            }
+            imageAttachment.setOnClickListener {
+                onInteractionListener.onPhotoClick(post)
             }
         }
     }

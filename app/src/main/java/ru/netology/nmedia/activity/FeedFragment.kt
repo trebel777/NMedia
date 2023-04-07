@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
@@ -15,11 +16,15 @@ import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.util.SignInDialogFragment
+import ru.netology.nmedia.viewmodel.AuthViewModel
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 class FeedFragment : Fragment() {
 
-    private val viewModel: PostViewModel by viewModels(ownerProducer = ::requireParentFragment)
+    private val viewModel: PostViewModel by activityViewModels()
+
+    val authViewModel: AuthViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,7 +39,11 @@ class FeedFragment : Fragment() {
             }
 
             override fun onLike(post: Post) {
-                viewModel.likeById(post)
+                if(!authViewModel.authorized){
+                    showSignInDialog()
+                }else {
+                    viewModel.likeById(post)
+                }
             }
 
             override fun onRemove(post: Post) {
@@ -52,6 +61,14 @@ class FeedFragment : Fragment() {
                     Intent.createChooser(intent, getString(R.string.chooser_share_post))
                 startActivity(shareIntent)
             }
+            override fun onPhotoClick(post: Post) {
+                val bundle = Bundle()
+                bundle.putLong("postId", post.id)
+                bundle.putString("uri", post.attachment?.url)
+                val navController = findNavController()
+                navController.navigate(R.id.action_feedFragment_to_showPhotoFragment, bundle)
+            }
+
         })
         binding.list.adapter = adapter
         viewModel.dataState.observe(viewLifecycleOwner) { state ->
@@ -65,12 +82,32 @@ class FeedFragment : Fragment() {
         }
 
         viewModel.data.observe(viewLifecycleOwner) { state ->
-            adapter.submitList(state.posts)
+            val newPosts = adapter.currentList.size < state.posts.size
+            adapter.submitList(state.posts) {
+                if (newPosts) {
+                    binding.list.smoothScrollToPosition(0)
+                }
+            }
             binding.emptyText.isVisible = state.empty
         }
 
+        viewModel.newerCount.observe(viewLifecycleOwner) { state ->
+            binding.newPosts.isVisible = state > 0
+            println(state)
+        }
+
+        binding.newPosts.setOnClickListener {
+            viewModel.readNewPosts()
+            binding.newPosts.isVisible = false
+            binding.list.smoothScrollToPosition(0)
+        }
+
         binding.fab.setOnClickListener {
-            findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            if (!authViewModel.authorized) {
+                showSignInDialog()
+            } else {
+                findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            }
         }
 
         binding.swipeRefreshLayout.setOnRefreshListener {
@@ -78,6 +115,10 @@ class FeedFragment : Fragment() {
             binding.swipeRefreshLayout.isRefreshing = false
         }
         return binding.root
+    }
+    fun showSignInDialog(){
+        val dialog = SignInDialogFragment()
+        dialog.show(getParentFragmentManager(), getString(R.string.authentication))
     }
 }
 
