@@ -5,12 +5,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import ru.netology.nmedia.api.PostsApi
+import ru.netology.nmedia.api.ApiService
 import ru.netology.nmedia.auth.AuthState
 import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.NetworkError
@@ -19,8 +20,10 @@ import ru.netology.nmedia.model.UserAuthResult
 import ru.netology.nmedia.util.SingleLiveEvent
 import java.io.File
 import java.io.IOException
+import javax.inject.Inject
 
-class SignUpViewModel: ViewModel() {
+@HiltViewModel
+class SignUpViewModel @Inject constructor(private val apiService: ApiService): ViewModel() {
     val name: MutableLiveData<String> = MutableLiveData<String>()
     val login: MutableLiveData<String> = MutableLiveData<String>()
     val pass: MutableLiveData<String> = MutableLiveData<String>()
@@ -63,7 +66,7 @@ class SignUpViewModel: ViewModel() {
 
     private suspend fun registerUser(name: String, login: String, pass: String) {
         try {
-            val response = PostsApi.retrofitService.registerUser(login, pass, name)
+            val response = apiService.registerUser(login, pass, name)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -79,7 +82,7 @@ class SignUpViewModel: ViewModel() {
 
     private suspend fun registerWithPhoto(name: String, login: String, pass: String, avatar: PhotoModel) {
         try {
-            val response = PostsApi.retrofitService.registerWithPhoto(
+            val response = apiService.registerWithPhoto(
                 login.toRequestBody("text/plain".toMediaType()),
                 pass.toRequestBody("text/plain".toMediaType()),
                 name.toRequestBody("text/plain".toMediaType()),

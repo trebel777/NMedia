@@ -8,7 +8,7 @@ import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.R
 import ru.netology.nmedia.auth.AppAuth
 
-class SignOutDialogFragment : DialogFragment() {
+class SignOutDialogFragment(val auth: AppAuth) : DialogFragment() {
     @Override
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return activity?.let {
@@ -17,7 +17,7 @@ class SignOutDialogFragment : DialogFragment() {
                 .setPositiveButton(
                     R.string.sign_out)
                     { _, _ ->
-                        AppAuth.getInstance().removeAuth()
+                        auth.removeAuth()
                         findNavController().navigateUp()
                     }
                 .setNegativeButton(getString(R.string.dialog_cancel))

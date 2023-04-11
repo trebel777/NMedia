@@ -11,15 +11,21 @@ import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.auth.AppAuth
+import javax.inject.Inject
 import kotlin.random.Random
 
+
+@AndroidEntryPoint
 class FCMService : FirebaseMessagingService() {
     private val action = "action"
     private val content = "content"
     private val channelId = "remote"
     private val gson = Gson()
+    @Inject
+    lateinit var auth: AppAuth
 
     override fun onCreate() {
         super.onCreate()
@@ -57,7 +63,7 @@ class FCMService : FirebaseMessagingService() {
         val  testInputPushValue = message.data.values.map {
             gson.fromJson(it, Test::class.java)
         }[0]
-        val myId = AppAuth.getInstance().authStateFlow.value.id
+        val myId = auth.authStateFlow.value.id
         when {
             testInputPushValue.recipientId == myId -> {
                 handleTestAction(testInputPushValue,"Персональная рассылка")
@@ -67,11 +73,11 @@ class FCMService : FirebaseMessagingService() {
             }
             testInputPushValue.recipientId == 0L  -> {
                 println("сервер считает, что у нас анонимная аутентификация, переотправляем токен")
-                AppAuth.getInstance().sendPushToken()
+                auth.sendPushToken()
             }
             testInputPushValue.recipientId != 0L -> {
                 println("сервер считает, что у на нашем устройстве другая аутентификация, переотправляем токен")
-                AppAuth.getInstance().sendPushToken()
+                auth.sendPushToken()
             }
         }
     }
@@ -93,7 +99,7 @@ class FCMService : FirebaseMessagingService() {
     }
 
     override fun onNewToken(token: String) {
-        AppAuth.getInstance().sendPushToken(token)
+        auth.sendPushToken(token)
     }
 
     @SuppressLint("MissingPermission")
