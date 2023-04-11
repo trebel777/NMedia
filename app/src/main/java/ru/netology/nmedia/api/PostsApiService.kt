@@ -13,6 +13,7 @@ import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.auth.AuthState
 import ru.netology.nmedia.dto.Media
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.dto.PushToken
 
 private const val BASE_URL = "${BuildConfig.BASE_URL}/api/slow/"
 
@@ -43,6 +44,9 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 interface PostsApiService {
+
+    @POST("users/push-tokens")
+    suspend fun save(@Body pushToken: PushToken)
 
     @GET("posts")
     suspend fun getAll(): Response<List<Post>>

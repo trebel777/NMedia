@@ -48,6 +48,6 @@
     <string name="reg_error">Ошибка при регистрации</string>
     <string name="upload_avatar">Загрузить аватар</string>
     <string name="choose">Выбор</string>
-    <string name="gallry">Галерея</string>
+    <string name="gallery">Галерея</string>
     <string name="photo">Фото</string>
 </resources>
