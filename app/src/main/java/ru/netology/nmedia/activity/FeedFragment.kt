@@ -8,9 +8,12 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import ru.netology.nmedia.R
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
@@ -26,6 +29,7 @@ import javax.inject.Inject
 class FeedFragment : Fragment() {
 
     private val viewModel: PostViewModel by viewModels()
+
     @Inject
     lateinit var auth: AppAuth
 
@@ -44,9 +48,9 @@ class FeedFragment : Fragment() {
             }
 
             override fun onLike(post: Post) {
-                if(!authViewModel.authorized){
+                if (!authViewModel.authorized) {
                     showSignInDialog()
-                }else {
+                } else {
                     viewModel.likeById(post)
                 }
             }
@@ -66,6 +70,7 @@ class FeedFragment : Fragment() {
                     Intent.createChooser(intent, getString(R.string.chooser_share_post))
                 startActivity(shareIntent)
             }
+
             override fun onPhotoClick(post: Post) {
                 val bundle = Bundle()
                 bundle.putLong("postId", post.id)
@@ -86,42 +91,47 @@ class FeedFragment : Fragment() {
             }
         }
 
-        viewModel.data.observe(viewLifecycleOwner) { state ->
-            val newPosts = adapter.currentList.size < state.posts.size
-            adapter.submitList(state.posts) {
-                if (newPosts) {
-                    binding.list.smoothScrollToPosition(0)
-                }
-            }
-            binding.emptyText.isVisible = state.empty
+
+        @Suppress("DEPRECATION")
+        lifecycleScope.launchWhenCreated {
+            viewModel.data.collectLatest(adapter::submitData)
         }
 
-        viewModel.newerCount.observe(viewLifecycleOwner) { state ->
-            binding.newPosts.isVisible = state > 0
-            println(state)
+
+        @Suppress("DEPRECATION")
+        lifecycleScope.launchWhenCreated {
+            adapter.loadStateFlow.collectLatest { state ->
+                binding.swipeRefreshLayout.isRefreshing =
+                    state.refresh is LoadState.Loading ||
+                            state.prepend is LoadState.Loading ||
+                            state.append is LoadState.Loading
+            }
         }
 
         binding.newPosts.setOnClickListener {
-            viewModel.readNewPosts()
-            binding.newPosts.isVisible = false
-            binding.list.smoothScrollToPosition(0)
-        }
-
-        binding.fab.setOnClickListener {
-            if (!authViewModel.authorized) {
-                showSignInDialog()
-            } else {
-                findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+                viewModel.readNewPosts()
+                binding.newPosts.isVisible = false
+                binding.list.smoothScrollToPosition(0)
             }
-        }
 
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.refreshPosts()
-            binding.swipeRefreshLayout.isRefreshing = false
-        }
+            binding.fab.setOnClickListener {
+                if (!authViewModel.authorized) {
+                    showSignInDialog()
+                } else {
+                    findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+                }
+            }
+
+            binding.swipeRefreshLayout.setOnRefreshListener {
+//                viewModel.refreshPosts()
+//                binding.swipeRefreshLayout.isRefreshing = false
+                adapter.refresh()
+            }
+
         return binding.root
     }
-    fun showSignInDialog(){
+
+    fun showSignInDialog() {
         val dialog = SignInDialogFragment()
         dialog.show(getParentFragmentManager(), getString(R.string.authentication))
     }

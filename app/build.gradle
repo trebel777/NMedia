@@ -41,7 +41,7 @@ android {
 }
 dependencies {
 
-    def core_version = "1.9.0"
+    def core_version = "1.10.0"
     def kotlin_version = "1.8.20"
     def appcompat_version = '1.6.1'
     def constraintlayout_version = '2.1.4'
@@ -49,12 +49,12 @@ dependencies {
     def junit_version = "4.13.2"
     def ext_junit_version = '1.1.5'
     def espresso_core_version = '3.5.1'
-    def activity_version = '1.6.1'
-    def lifecycle_version = '2.6.0'
+    def activity_version = '1.7.0'
+    def lifecycle_version = '2.6.1'
     def mdc_version = '1.8.0'
     def gson_version = '2.10.1'
     def nav_version = '2.5.3'
-    def room_version = '2.5.0'
+    def room_version = '2.5.1'
     def firebase_version = '31.2.3'
     def play_services_base_version = '18.2.0'
     def glide_version = '4.15.1'
@@ -64,6 +64,7 @@ dependencies {
     def coroutines_version = "1.6.0"
     def imagepicker_version = "2.1"
     def hilt_version= "2.45"
+    def paging_version = "3.1.1"
 
 
 
@@ -99,6 +100,7 @@ dependencies {
     implementation "com.github.dhaval2404:imagepicker:$imagepicker_version"
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
+    implementation "androidx.paging:paging-runtime-ktx:$paging_version"
 
 
 
