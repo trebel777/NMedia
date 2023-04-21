@@ -7,12 +7,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentShowPhotoBinding
 
 private const val URI = "uri"
 
+@AndroidEntryPoint
 class ShowPhotoFragment : Fragment() {
     private var uri: String? = null
 
