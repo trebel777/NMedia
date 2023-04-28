@@ -1,9 +1,19 @@
 package ru.netology.nmedia.dto
 
 import ru.netology.nmedia.enumeration.AttachmentType
+import ru.netology.nmedia.enumeration.TimeSeparatorValue
 
+
+sealed class FeedItem{
+    abstract val id: Long
+}
+
+data class TimeSeparator(
+    override val id: Long,
+    val value: TimeSeparatorValue,
+) : FeedItem()
 data class Post(
-    val id: Long,
+    override val id: Long,
     val authorId: Long,
     val author: String,
     val authorAvatar: String = "",
@@ -13,7 +23,7 @@ data class Post(
     val likes: Long = 0,
     var attachment: Attachment? = null,
     val ownedByMe: Boolean = false
-) {
+): FeedItem() {
     var replys: Long = 0
     var replyByMe: Boolean = false
     val video: String = ""
