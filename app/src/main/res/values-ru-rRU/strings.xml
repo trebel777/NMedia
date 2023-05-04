@@ -50,4 +50,7 @@
     <string name="choose">Выбор</string>
     <string name="gallery">Галерея</string>
     <string name="photo">Фото</string>
+    <string name="yesterday">Вчера</string>
+    <string name="today">Сегодня</string>
+    <string name="last_week">На прошлой неделе</string>
 </resources>

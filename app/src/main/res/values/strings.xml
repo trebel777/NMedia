@@ -49,6 +49,10 @@
     <string name="choose">Choose</string>
     <string name="gallery">Gallery</string>
     <string name="photo">Photo</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="last_week">Last week</string>
+
 
 
 </resources>

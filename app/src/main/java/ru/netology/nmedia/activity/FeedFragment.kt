@@ -1,10 +1,12 @@
 package ru.netology.nmedia.activity
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -19,6 +21,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.R
 import ru.netology.nmedia.adapter.OnInteractionListener
+import ru.netology.nmedia.adapter.PagingLoadStateAdapter
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentFeedBinding
@@ -38,6 +41,7 @@ class FeedFragment : Fragment() {
 
     val authViewModel: AuthViewModel by viewModels()
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -82,8 +86,20 @@ class FeedFragment : Fragment() {
                 navController.navigate(R.id.action_feedFragment_to_showPhotoFragment, bundle)
             }
 
-        })
-        binding.list.adapter = adapter
+        }, requireContext())
+        binding.list.adapter = adapter.withLoadStateHeaderAndFooter( header = PagingLoadStateAdapter
+            (object : PagingLoadStateAdapter.OnInteractionListener {
+            override fun onRetry() {
+                adapter.retry()
+            }
+        }),
+            footer = PagingLoadStateAdapter(object :
+                PagingLoadStateAdapter.OnInteractionListener {
+                override fun onRetry() {
+                    adapter.retry()
+                }
+            }),
+        )
         viewModel.dataState.observe(viewLifecycleOwner) { state ->
             binding.progress.isVisible = state.loading
             binding.swipeRefreshLayout.isRefreshing = state.refreshing
@@ -94,11 +110,6 @@ class FeedFragment : Fragment() {
             }
         }
 
-
-//        @Suppress("DEPRECATION")
-//        lifecycleScope.launchWhenCreated {
-//            viewModel.data.collectLatest(adapter::submitData)
-//        }
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.data.collectLatest(adapter::submitData)
@@ -109,9 +120,7 @@ class FeedFragment : Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 adapter.loadStateFlow.collectLatest { state ->
                     binding.swipeRefreshLayout.isRefreshing =
-                        state.refresh is LoadState.Loading ||
-                                state.prepend is LoadState.Loading ||
-                                state.append is LoadState.Loading
+                        state.refresh is LoadState.Loading
                 }
             }
         }
